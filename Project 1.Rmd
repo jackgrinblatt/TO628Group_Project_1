@@ -1,0 +1,46 @@
+---
+title: "Project 1"
+author: "Eliada Deschamps, Jack Grinblatt, Jon Tao, Ketan Kshirsagar, Aksshath Soundarrarajan"
+date: "3/20/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+# Data Model
+
+```{r}
+
+```
+
+### Import Data
+
+```{r}
+
+```
+
+
+### Clense Data
+```{r}
+
+```
+
+
+### Build Linear Regression Models 
+
+```{r}
+
+```
+
+
+### Build Logistic Regression Models
+
+```{r}
+
+```
+
+
+### Final Analysis
+
+Given the data...
