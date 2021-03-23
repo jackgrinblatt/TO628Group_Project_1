@@ -46,7 +46,7 @@ summary(listings)
 
 ```{r}
 str(listings)
-model1 <-lm(prosper_score ~ loan_status + prosper_rating + scorex + income_range + borrower_state, loan_status_description, data = listings)
+model1 <-lm(prosper_score ~ loan_status + prosper_rating + scorex + income_range + income_range_description + employment_status_description + occupation + borrower_state + borrower_city + loan_status_description, data = listings)
 summary(model1)
 ```
 
