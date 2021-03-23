@@ -1,0 +1,90 @@
+---
+title: "Project 1"
+author: "Eliada Deschamps, Jack Grinblatt, Jon Tao, Ketan Kshirsagar, Aksshath Soundarrarajan"
+date: "3/20/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+# Data Model
+
+
+### Import Data
+
+```{r}
+
+listings <- read.csv("ProjectA_Listings2013.csv")
+
+
+```
+
+
+### Clense Data
+```{r}
+
+listings$loan_status <- as.factor(listings$loan_status)
+listings$prosper_rating <-as.factor(listings$prosper_rating)
+listings$scorex <-as.factor(listings$scorex)
+listings$income_range <-as.factor(listings$income_range)
+listings$income_range_description <-as.factor(listings$income_range_description)
+listings$employment_status_description <-as.factor(listings$employment_status_description)
+listings$occupation <-as.factor(listings$occupation)
+listings$borrower_state <-as.factor(listings$borrower_state)
+listings$borrower_city <-as.factor(listings$borrower_city)
+listings$loan_status_description <- as.factor(listings$loan_status_description)
+
+
+str(listings)
+summary(listings)
+
+```
+
+
+### Build Linear Regression Models 
+
+#Model 1
+
+```{r}
+str(listings)
+model1 <-lm(prosper_score ~ loan_status + prosper_rating + scorex + income_range + income_range_description + employment_status_description + occupation + borrower_state + borrower_city + loan_status_description, data = listings)
+summary(model1)
+```
+# Model 2
+
+```{r}
+
+```
+
+# Model 3
+
+```{r}
+
+```
+
+
+### Build Logistic Regression Models
+
+#Model 1
+
+```{r}
+
+```
+
+#Model 2
+
+```{r}
+
+```
+
+#Model 3
+
+```{r}
+
+```
+
+
+### Final Analysis
+
+Given the data...
