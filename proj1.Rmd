@@ -47,14 +47,16 @@ summary(listings)
 #Model 1
 
 ```{r}
-str(listings)
-model1 <-lm(prosper_score ~ loan_status + prosper_rating + scorex + income_range + income_range_description + employment_status_description + occupation + borrower_state + borrower_city + loan_status_description, data = listings)
+model1 <-lm(prosper_score ~ ., data = listings)
+
 summary(model1)
 ```
 # Model 2
 
 ```{r}
+model2 <-lm(prosper_score ~ number_of_days + principal_balance + loan_status + amount_funded + listing_term + listing_monthly_payment + scorex + income_range + stated_monthly_income + employment_status_description + dti_wprosper_loan + months_employed + monthly_debt + lender_indicator + current_delinquencies + delinquencies_last7_years + public_records_last10_years + public_records_last12_months + first_recorded_credit_line + credit_lines_last7_years + inquiries_last6_months + amount_delinquent + current_credit_lines + bankcard_utilization + total_open_revolving_accounts + installment_balance + real_estate_balance + revolving_balance + real_estate_payment + revolving_available_percent + total_inquiries + total_trade_items + satisfactory_accounts + was_delinquent_derog + now_delinquent_derog + delinquencies_over30_days + delinquencies_over60_days + delinquencies_over90_days , data = listings)
 
+summary(model2)
 ```
 
 # Model 3
@@ -69,13 +71,17 @@ summary(model1)
 #Model 1
 
 ```{r}
+lrmodel1 <-glm(prosper_score ~ ., data = listings)
 
+summary(lrmodel1)
 ```
 
 #Model 2
 
 ```{r}
+lrmodel2 <-glm(prosper_score ~ number_of_days + principal_balance + loan_status + amount_funded + listing_term + listing_monthly_payment + scorex + income_range + stated_monthly_income + employment_status_description + dti_wprosper_loan + months_employed + monthly_debt + lender_indicator + current_delinquencies + delinquencies_last7_years + public_records_last10_years + public_records_last12_months + first_recorded_credit_line + credit_lines_last7_years + inquiries_last6_months + amount_delinquent + current_credit_lines + bankcard_utilization + total_open_revolving_accounts + installment_balance + real_estate_balance + revolving_balance + real_estate_payment + revolving_available_percent + total_inquiries + total_trade_items + satisfactory_accounts + was_delinquent_derog + now_delinquent_derog + delinquencies_over30_days + delinquencies_over60_days + delinquencies_over90_days, data = listings)
 
+summary(lrmodel2)
 ```
 
 #Model 3
