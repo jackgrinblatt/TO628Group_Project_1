@@ -11,7 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 # Data Model
 
 
-### Import Data
+## Import Data
 
 ```{r}
 
@@ -21,7 +21,7 @@ listings <- read.csv("ProjectA_Listings2013.csv")
 ```
 
 
-### Clense Data
+## Clense Data
 ```{r}
 
 listings$loan_status <- as.factor(listings$loan_status)
@@ -45,66 +45,53 @@ summary(listings)
 ```
 
 
-### Build Linear Regression Models 
-
-# Model 1
-
+# Build Linear Regression Models 
+## Model 1
+### Includes Only Variables with Significant Correlation
 ```{r}
-model1 <-lm(borrower_rate ~ ., data = listings)
+model1 <-lm(borrower_rate ~ number_of_days + principal_balance + loan_status + amount_funded + listing_term + listing_monthly_payment + scorex + prosper_score + listing_category_id + stated_monthly_income + employment_status_description + occupation + lender_indicator + monthly_debt + current_delinquencies + first_recorded_credit_line + amount_delinquent + bankcard_utilization + total_open_revolving_accounts + real_estate_balance + was_delinquent_derog + delinquencies_over30_days + is_homeowner, data = listings)
 
 summary(model1)
 ```
 
-# Model 2
-## Includes all variables, some with no contribution or increased processing time were removed
+## Model 2
+### Includes Only Variables with Significant Contribution (coeff > 10^-5)
 ```{r}
-model2 <-lm(borrower_rate ~ number_of_days + principal_balance + loan_status + amount_funded + prosper_rating + listing_term + listing_monthly_payment + scorex + prosper_score + listing_category_id + income_range + stated_monthly_income + income_verifiable + dti_wprosper_loan + employment_status_description + occupation + months_employed + lender_indicator + monthly_debt + current_delinquencies + delinquencies_last7_years + public_records_last10_years + public_records_last12_months + first_recorded_credit_line + credit_lines_last7_years + inquiries_last6_months + amount_delinquent + current_credit_lines + bankcard_utilization + total_open_revolving_accounts + installment_balance + real_estate_balance + revolving_balance + real_estate_payment + revolving_available_percent + total_inquiries + satisfactory_accounts + was_delinquent_derog + delinquencies_over30_days + delinquencies_over60_days + is_homeowner, data = listings)
+model2 <-lm(borrower_rate ~ number_of_days + principal_balance + loan_status + amount_funded + listing_term + listing_monthly_payment + scorex + prosper_score + listing_category_id + employment_status_description + occupation + lender_indicator + monthly_debt + current_delinquencies + bankcard_utilization + total_open_revolving_accounts + was_delinquent_derog + delinquencies_over30_days + is_homeowner, data = listings)
 
 summary(model2)
 ```
 
-# Model 3
-## Includes variables with significant correlation
-```{r}
-model3 <-lm(borrower_rate ~ number_of_days + principal_balance + loan_status + amount_funded + listing_term + listing_monthly_payment + scorex + prosper_score + listing_category_id + stated_monthly_income + employment_status_description + occupation + lender_indicator + monthly_debt + current_delinquencies + first_recorded_credit_line + amount_delinquent + bankcard_utilization + total_open_revolving_accounts + real_estate_balance + was_delinquent_derog + delinquencies_over30_days + is_homeowner, data = listings)
-
-summary(model3)
-```
-
-# Model 4
-## Includes variables with significant contribution (coeff > 10^-5)
-```{r}
-model4 <-lm(borrower_rate ~ number_of_days + principal_balance + loan_status + amount_funded + listing_term + listing_monthly_payment + scorex + prosper_score + listing_category_id + employment_status_description + occupation + lender_indicator + monthly_debt + current_delinquencies + bankcard_utilization + total_open_revolving_accounts + was_delinquent_derog + delinquencies_over30_days + is_homeowner, data = listings)
-
-summary(model4)
-```
-It makes sense that the listing term affects the borrower rate. The rate also decreases with a higher credit score. Factors that probably contribute to a borrower being high risk and having a higher rate are unemployment, certain occupations (such as students), delinquencies, and bank card utilization.
-
-### Build Logistic Regression Models
-
-# Model 1
+# Build Logistic Regression Model
 
 ```{r}
-lrmodel1 <-glm(prosper_score ~ ., data = listings)
+lrmodel1 <- glm(borrower_rate ~ number_of_days + principal_balance + loan_status + amount_funded + listing_term + listing_monthly_payment + scorex + prosper_score + listing_category_id + employment_status_description + occupation + lender_indicator + monthly_debt + current_delinquencies + bankcard_utilization + total_open_revolving_accounts + was_delinquent_derog + delinquencies_over30_days + is_homeowner, data = listings)
 
 summary(lrmodel1)
-```
-
-# Model 2
-
-```{r}
-lrmodel2 <-glm(prosper_score ~ number_of_days + principal_balance + loan_status + amount_funded + listing_term + listing_monthly_payment + scorex + income_range + stated_monthly_income + employment_status_description + dti_wprosper_loan + months_employed + monthly_debt + lender_indicator + current_delinquencies + delinquencies_last7_years + public_records_last10_years + public_records_last12_months + first_recorded_credit_line + credit_lines_last7_years + inquiries_last6_months + amount_delinquent + current_credit_lines + bankcard_utilization + total_open_revolving_accounts + installment_balance + real_estate_balance + revolving_balance + real_estate_payment + revolving_available_percent + total_inquiries + total_trade_items + satisfactory_accounts + was_delinquent_derog + now_delinquent_derog + delinquencies_over30_days + delinquencies_over60_days + delinquencies_over90_days, data = listings)
-
-summary(lrmodel2)
-```
-
-# Model 3
-
-```{r}
 
 ```
 
+# Final Analysis
 
-### Final Analysis
+The objective of this analysis was to determine relevant factors for determining credit rating, as well as dispell any myths regarding factors that don't truly matter.
 
-Given the data...
+## Factors that Matter Most
+Based on the linear and logistic models above, we conclude that standard factors measuring the consumer's debt matter most, specifically:
+- Bankcard Utilization
+- Open Revolving Accounts
+- Real Estate Balance
+
+
+## Factors that can be Questioned
+Based on the linear and logistic models above, we conclude that a few factors have the opposite effect of the general public narrative. Specifically:
+- Bank Card Utilization
+- Open Revolving Accounts
+- Real Estate Balance
+
+The public narrative suggests that individuals with more debt should have more risk for taking on new debt, primarily measured by the debt-to-income ratio. That being said, the models suggest each of these factors translates to a better credit rating. This is likely due to the underlying behavior of the consumer. Opening credit lines requires a personal ability to manage finances and so long as these individuals do not have other indicators (such as delinquencies), they are actually more likely to be good candidates for opening additional credit lines.
+
+## Suprises
+Contrary to public opinion and logic, the models show that the increase in delinquencies translate to a higher credit score. It's possible that this is mechnically set to increase the pool of high-interest and high-fee consumers which may have a larger CLV, however more investigation is needed.
+
+## Future Implications
+Given these findings, we recommend an adjusted approach to setting consumer rates at Prosper. Using a model as simple as KNN or as complex as ANN, Prosper can segment and classify future customers based on the factors that truly matter to credit rating, thereby increasig its chances of higher quality customers and reduced uncollectables.
