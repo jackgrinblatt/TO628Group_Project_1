@@ -9,11 +9,11 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-The objective of this analysis is to model factors that translate to effect on borrower rate at Prosper. The outcome of this analysis will allow Prosper to adjust borrower rate methodology as well as identify arbritrage opportunities.
+The objective of this analysis is to model factors that translate to effect on borrower rate at Prosper. The outcome of this analysis will allow Prosper to adjust borrower rate methodology as well as identify arbitrage opportunities.
 
 ## Methodology
 1. Import Data
-2. Clense Data
+2. Cleanse Data
 3. Run Linear and Logistic Regression Models
 4. Analysis & Conclusions
 
@@ -23,16 +23,12 @@ For each of these steps, the analysis will show the code in R so Prosper analyst
 ## 1. Import Data
 
 ```{r}
-
 listings <- read.csv("ProjectA_Listings2013.csv")
-
-
 ```
 
 
 ## 2. Cleanse Data
 ```{r}
-
 listings$loan_status <- as.factor(listings$loan_status)
 listings$prosper_rating <-as.factor(listings$prosper_rating)
 listings$scorex <-as.factor(listings$scorex)
@@ -50,19 +46,18 @@ listings$is_homeowner <- as.factor(listings$is_homeowner)
 
 str(listings)
 summary(listings)
-
 ```
 
 
 ## 3. Build Linear & Logistic Regression Models 
-Linear Regresion Model 1: Includes Only Variables with Significant Correlation
+Linear Regression Model 1: Includes Only Variables with Significant Correlation
 ```{r}
 model1 <-lm(borrower_rate ~ number_of_days + principal_balance + loan_status + amount_funded + listing_term + listing_monthly_payment + scorex + prosper_score + listing_category_id + stated_monthly_income + employment_status_description + occupation + lender_indicator + monthly_debt + current_delinquencies + first_recorded_credit_line + amount_delinquent + bankcard_utilization + total_open_revolving_accounts + real_estate_balance + was_delinquent_derog + delinquencies_over30_days + is_homeowner, data = listings)
 
 summary(model1)
 ```
 
-Linear Regression Model 2: Includes Only Variables with Statistically Significant Contriution and Large Coefficient (> 10^-5)
+Linear Regression Model 2: Includes Only Variables with Statistically Significant Contribution and Large Coefficient (> 10^-5)
 ```{r}
 model2 <-lm(borrower_rate ~ number_of_days + principal_balance + loan_status + amount_funded + listing_term + listing_monthly_payment + scorex + prosper_score + listing_category_id + employment_status_description + occupation + lender_indicator + monthly_debt + current_delinquencies + bankcard_utilization + total_open_revolving_accounts + was_delinquent_derog + delinquencies_over30_days + is_homeowner, data = listings)
 
@@ -74,12 +69,11 @@ Logistic Regression Model 1
 lrmodel1 <- glm(borrower_rate ~ number_of_days + principal_balance + loan_status + amount_funded + listing_term + listing_monthly_payment + scorex + prosper_score + listing_category_id + employment_status_description + occupation + lender_indicator + monthly_debt + current_delinquencies + bankcard_utilization + total_open_revolving_accounts + was_delinquent_derog + delinquencies_over30_days + is_homeowner, data = listings)
 
 summary(lrmodel1)
-
 ```
 
 ## 4. Analysis & Conclusions
 
-The objective of this analysis was to determine relevant factors for determining credit rating, as well as dispell any myths regarding factors that don't truly matter.
+The objective of this analysis was to determine relevant factors for determining credit rating, as well as dispel any myths regarding factors that don't truly matter.
 
 ### Factors that Matter Most
 Based on the linear and logistic models above, we conclude that standard factors measuring the consumer's debt matter most, specifically:
@@ -97,7 +91,7 @@ Based on the linear and logistic models above, we conclude that a few factors ha
 The public narrative suggests that individuals with more debt should have more risk for taking on new debt, primarily measured by the debt-to-income ratio. That being said, the models suggest each of these factors translates to a better credit rating. This is likely due to the underlying behavior of the consumer. Opening credit lines requires a personal ability to manage finances and so long as these individuals do not have other indicators (such as delinquencies), they are actually more likely to be good candidates for opening additional credit lines.
 
 ### Suprises
-Contrary to public opinion and logic, the models show that the increase in delinquencies translate to a higher credit score. It's possible that this is mechnically set to increase the pool of high-interest and high-fee consumers which may have a larger CLV, however more investigation is needed.
+Contrary to public opinion and logic, the models show that the increase in delinquencies translate to a higher credit score. It's possible that this is mechanically set to increase the pool of high-interest and high-fee consumers which may have a larger CLV, however more investigation is needed.
 
 ### Future Implications
-Given these findings, we recommend an adjusted approach to setting consumer rates at Prosper. Using a model as simple as KNN or as complex as ANN, Prosper can segment and classify future customers based on the factors that truly matter to credit rating, thereby increasig its chances of higher quality customers and reduced uncollectables.
+Given these findings, we recommend an adjusted approach to setting consumer rates at Prosper. Using a model as simple as KNN or as complex as ANN, Prosper can segment and classify future customers based on the factors that truly matter to credit rating, thereby increasing its chances of higher quality customers and reduced uncollectables.
