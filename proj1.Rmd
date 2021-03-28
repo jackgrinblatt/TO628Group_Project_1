@@ -34,7 +34,10 @@ listings$occupation <-as.factor(listings$occupation)
 listings$borrower_state <-as.factor(listings$borrower_state)
 listings$borrower_city <-as.factor(listings$borrower_city)
 listings$loan_status_description <- as.factor(listings$loan_status_description)
-
+listings$loan_origination_date <- as.factor(listings$loan_origination_date)
+listings$first_recorded_credit_line <- as.factor(substr(listings$first_recorded_credit_line, nchar(listings$first_recorded_credit_line)-3, nchar(listings$first_recorded_credit_line)))
+listings$income_verifiable <- as.factor(listings$income_verifiable)
+listings$is_homeowner <- as.factor(listings$is_homeowner)
 
 str(listings)
 summary(listings)
@@ -44,31 +47,42 @@ summary(listings)
 
 ### Build Linear Regression Models 
 
-#Model 1
+# Model 1
 
 ```{r}
-model1 <-lm(prosper_score ~ ., data = listings)
+model1 <-lm(borrower_rate ~ ., data = listings)
 
 summary(model1)
 ```
-# Model 2
 
+# Model 2
+## Includes all variables, some with no contribution or increased processing time were removed
 ```{r}
-model2 <-lm(prosper_score ~ number_of_days + principal_balance + loan_status + amount_funded + listing_term + listing_monthly_payment + scorex + income_range + stated_monthly_income + employment_status_description + dti_wprosper_loan + months_employed + monthly_debt + lender_indicator + current_delinquencies + delinquencies_last7_years + public_records_last10_years + public_records_last12_months + first_recorded_credit_line + credit_lines_last7_years + inquiries_last6_months + amount_delinquent + current_credit_lines + bankcard_utilization + total_open_revolving_accounts + installment_balance + real_estate_balance + revolving_balance + real_estate_payment + revolving_available_percent + total_inquiries + total_trade_items + satisfactory_accounts + was_delinquent_derog + now_delinquent_derog + delinquencies_over30_days + delinquencies_over60_days + delinquencies_over90_days , data = listings)
+model2 <-lm(borrower_rate ~ number_of_days + principal_balance + loan_status + amount_funded + prosper_rating + listing_term + listing_monthly_payment + scorex + prosper_score + listing_category_id + income_range + stated_monthly_income + income_verifiable + dti_wprosper_loan + employment_status_description + occupation + months_employed + lender_indicator + monthly_debt + current_delinquencies + delinquencies_last7_years + public_records_last10_years + public_records_last12_months + first_recorded_credit_line + credit_lines_last7_years + inquiries_last6_months + amount_delinquent + current_credit_lines + bankcard_utilization + total_open_revolving_accounts + installment_balance + real_estate_balance + revolving_balance + real_estate_payment + revolving_available_percent + total_inquiries + satisfactory_accounts + was_delinquent_derog + delinquencies_over30_days + delinquencies_over60_days + is_homeowner, data = listings)
 
 summary(model2)
 ```
 
 # Model 3
-
+## Includes variables with significant correlation
 ```{r}
+model3 <-lm(borrower_rate ~ number_of_days + principal_balance + loan_status + amount_funded + listing_term + listing_monthly_payment + scorex + prosper_score + listing_category_id + stated_monthly_income + employment_status_description + occupation + lender_indicator + monthly_debt + current_delinquencies + first_recorded_credit_line + amount_delinquent + bankcard_utilization + total_open_revolving_accounts + real_estate_balance + was_delinquent_derog + delinquencies_over30_days + is_homeowner, data = listings)
 
+summary(model3)
 ```
 
+# Model 4
+## Includes variables with significant contribution (coeff > 10^-5)
+```{r}
+model4 <-lm(borrower_rate ~ number_of_days + principal_balance + loan_status + amount_funded + listing_term + listing_monthly_payment + scorex + prosper_score + listing_category_id + employment_status_description + occupation + lender_indicator + monthly_debt + current_delinquencies + bankcard_utilization + total_open_revolving_accounts + was_delinquent_derog + delinquencies_over30_days + is_homeowner, data = listings)
+
+summary(model4)
+```
+It makes sense that the listing term affects the borrower rate. The rate also decreases with a higher credit score. Factors that probably contribute to a borrower being high risk and having a higher rate are unemployment, certain occupations (such as students), delinquencies, and bank card utilization.
 
 ### Build Logistic Regression Models
 
-#Model 1
+# Model 1
 
 ```{r}
 lrmodel1 <-glm(prosper_score ~ ., data = listings)
@@ -76,7 +90,7 @@ lrmodel1 <-glm(prosper_score ~ ., data = listings)
 summary(lrmodel1)
 ```
 
-#Model 2
+# Model 2
 
 ```{r}
 lrmodel2 <-glm(prosper_score ~ number_of_days + principal_balance + loan_status + amount_funded + listing_term + listing_monthly_payment + scorex + income_range + stated_monthly_income + employment_status_description + dti_wprosper_loan + months_employed + monthly_debt + lender_indicator + current_delinquencies + delinquencies_last7_years + public_records_last10_years + public_records_last12_months + first_recorded_credit_line + credit_lines_last7_years + inquiries_last6_months + amount_delinquent + current_credit_lines + bankcard_utilization + total_open_revolving_accounts + installment_balance + real_estate_balance + revolving_balance + real_estate_payment + revolving_available_percent + total_inquiries + total_trade_items + satisfactory_accounts + was_delinquent_derog + now_delinquent_derog + delinquencies_over30_days + delinquencies_over60_days + delinquencies_over90_days, data = listings)
@@ -84,7 +98,7 @@ lrmodel2 <-glm(prosper_score ~ number_of_days + principal_balance + loan_status 
 summary(lrmodel2)
 ```
 
-#Model 3
+# Model 3
 
 ```{r}
 
