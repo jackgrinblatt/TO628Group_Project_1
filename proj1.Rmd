@@ -1,7 +1,7 @@
 ---
 title: "Analysis of Prosper Borrower Rates"
 author: "Eliada Deschamps, Jack Grinblatt, Jon Tao, Ketan Kshirsagar, Aksshath Soundarrarajan"
-date: "3/20/2021"
+date: "3/28/2021"
 output: html_document
 ---
 
@@ -30,7 +30,7 @@ listings <- read.csv("ProjectA_Listings2013.csv")
 ```
 
 
-## 2. Clense Data
+## 2. Cleanse Data
 ```{r}
 
 listings$loan_status <- as.factor(listings$loan_status)
