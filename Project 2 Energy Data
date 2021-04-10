@@ -43,6 +43,7 @@ rv1, Random variable 1, nondimensional
 rv2, Random variable 2, nondimensional
 
 ## Import and Clean data
+
 ```{r}
 energydata <- read.csv("KAG_energydata_complete.csv")
 energydata$date <- NULL
