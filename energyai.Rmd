@@ -107,11 +107,13 @@ summary(energydata)
 #energydata_pred<-ifelse(predict(logit, energydatam, type = "response")>0.1,3,0)
 #summary(energydata_pred)
 
-#confusionMatrix(as.factor(energydata_pred),as.factor(energydata$RH_out),positive = "1")
-
 ```
 
 ### Logistic Regression Model Confusion Matrix
+```{r}
+#confusionMatrix(as.factor(energydata_pred),as.factor(energydata$RH_out),positive = "1")
+```
+
 
 ## Decision Tree Model
 ```{r}
