@@ -30,20 +30,62 @@ library(e1071)
 ```
 ### Definitions
 
+date time year-month-day hour:minute:second
+
+Appliances, energy use in Wh
+
+lights, energy use of light fixtures in the house in Wh
+
 T1, Temperature in kitchen area, in Celsius
-RH1, Humidity in kitchen area, in % T2, Temperature in living room area, in Celsius RH2, Humidity in living room area, in %
+
+RH1, Humidity in kitchen area, in % 
+
+T2, Temperature in living room area, in Celsius 
+
+RH2, Humidity in living room area, in %
+
 T3, Temperature in laundry room area
-RH3, Humidity in laundry room area, in % T4, Temperature in office room, in Celsius RH4, Humidity in office room, in %
+
+RH3, Humidity in laundry room area, in % 
+
+T4, Temperature in office room, in Celsius 
+
+RH4, Humidity in office room, in %
+
 T5, Temperature in bathroom, in Celsius
-RH5, Humidity in bathroom, in % T6, Temperature outside the building (north side), in Celsius RH6, Humidity outside the building (north side), in %
+
+RH5, Humidity in bathroom, in % 
+
+T6, Temperature outside the building (north side), in Celsius 
+
+RH6, Humidity outside the building (north side), in %
+
 T7, Temperature in ironing room , in Celsius
-RH7, Humidity in ironing room, in % T8, Temperature in teenager room 2, in Celsius RH8, Humidity in teenager room 2, in %
+
+RH7, Humidity in ironing room, in % 
+
+T8, Temperature in teenager room 2, in Celsius 
+
+RH8, Humidity in teenager room 2, in %
+
 T9, Temperature in parents room, in Celsius
-RH9, Humidity in parents room, in % To, Temperature outside (from Chievres weather station), in Celsius Pressure (from Chievres weather station), in mm Hg RHout, Humidity outside (from Chievres weather station), in %
+
+RH9, Humidity in parents room, in % 
+
+To, Temperature outside (from Chievres weather station), in Celsius
+
+Pressure (from Chievres weather station), in mm Hg 
+
+RHout, Humidity outside (from Chievres weather station), in %
+
 Wind speed (from Chievres weather station), in m/s
+
 Visibility (from Chievres weather station), in km
+
 Tdewpoint (from Chievres weather station), Â°C
+
 rv1, Random variable 1, nondimensional
+
 rv2, Random variable 2, nondimensional
 
 ### Import and Clean data
@@ -51,6 +93,9 @@ rv2, Random variable 2, nondimensional
 ```{r}
 energydata <- read.csv("KAG_energydata_complete.csv")
 energydata$date <- NULL
+energydata$lights <- NULL
+energydata$rv1 <- NULL
+energydata$rv2 <- NULL
 energydata$T1 <- ifelse(is.na(energydata$T1),mean(energydata$T1, na.rm =T),energydata$T1)
 energydata$T2 <- ifelse(is.na(energydata$T2),mean(energydata$T2, na.rm =T),energydata$T2)
 energydata$T3 <- ifelse(is.na(energydata$T3),mean(energydata$T3, na.rm =T),energydata$T3)
@@ -77,12 +122,12 @@ energydata$RH_out <- ifelse(is.na(energydata$RH_out),mean(energydata$RH_out, na.
 energydata$Windspeed <- ifelse(is.na(energydata$Windspeed),mean(energydata$Windspeed, na.rm =T),energydata$Windspeed)
 energydata$Visibility <- ifelse(is.na(energydata$Visibility),mean(energydata$Visibility, na.rm =T),energydata$Visibility)
 energydata$Tdewpoint <- ifelse(is.na(energydata$Tdewpoint),mean(energydata$Tdewpoint, na.rm =T),energydata$Tdewpoint)
-energydata$rv1 <- ifelse(is.na(energydata$rv1),mean(energydata$rv1, na.rm =T),energydata$rv1)
-energydata$rv2 <- ifelse(is.na(energydata$rv2),mean(energydata$rv2, na.rm =T),energydata$rv2)
+#energydata$rv1 <- ifelse(is.na(energydata$rv1),mean(energydata$rv1, na.rm =T),energydata$rv1)
+#energydata$rv2 <- ifelse(is.na(energydata$rv2),mean(energydata$rv2, na.rm =T),energydata$rv2)
 
 energydatam <- as.data.frame(model.matrix(~.-1,energydata))
-str(energydata)
-summary(energydata)
+str(energydatam)
+summary(energydatam)
 
 ```
 # Build Models
@@ -101,39 +146,54 @@ summary(energydata)
 ## Logistic Regression Model
 
 ```{r}
-#logit<-glm(RH_out ~., data = energydatam)
-#summary(logit)
-
-#energydata_pred<-ifelse(predict(logit, energydatam, type = "response")>0.1,3,0)
-#summary(energydata_pred)
+logit<-glm(Appliances ~., data = energydatam)
+summary(logit)
 
 ```
 
 ### Logistic Regression Model Confusion Matrix
 ```{r}
+#energydata_pred<-ifelse(predict(logit, energydatam, type = "response")>0.1,3,0)
+#summary(energydata_pred)
 #confusionMatrix(as.factor(energydata_pred),as.factor(energydata$RH_out),positive = "1")
 ```
 
 
 ## Decision Tree Model
 ```{r}
-
+energydatadt <- as.data.frame(model.matrix(~.-1,energydata))
+energydatadt$Appliances <- as.factor(energydatadt$Appliances)
+decisiontreemodel <- C5.0(Appliances ~., data = energydatadt)
+summary(decisiontreemodel)
+plot(decisiontreemodel)
 ```
 
 ### Decision Tree Model Confusion Matrix
 ```{r}
-
+energydecisionpredict <- predict(decisiontreemodel, energydatadt)
+confusionMatrix(energydecisionpredict, energydatadt$Appliances)
 ```
 
 
 ## ANN Model
 ```{r}
+set.seed(12345)
 
+testset <- sample(1:nrow(energydatam), 3947)
+
+energytest <- energydatam[testset,]
+energytrain <- energydatam[-testset,]
+
+annmodel <- neuralnet(Appliances ~ ., data=energytrain)
 ```
 
 ### ANN Model Confusion Matrix
 ```{r}
+neuralpredictions <- predict(annmodel, energytest)
+neuralpredictions
 
+#CrossTable(x= energydatam$Appliances, y= neuralpredictions, #prop.chisq=FALSE)
+#confusionMatrix(as.factor(neuralpredictions), as.factor(energytest$Appliances), positive="1")
 ```
 
 
