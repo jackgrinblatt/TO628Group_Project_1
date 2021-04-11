@@ -80,16 +80,63 @@ str(energydata)
 summary(energydata)
 
 ```
+# Build Models
 
-## Build Logistic Regression Model
-
+## Linear Regression Model
 ```{r}
-logit<-glm(RH_out ~., data = energydatam)
-summary(logit)
-
-energydata_pred<-ifelse(predict(logit, energydatam, type = "response")>0.1,3,0)
-summary(energydata_pred)
-
-confusionMatrix(as.factor(energydata_pred),as.factor(energydata$RH_out),positive = "1")
 
 ```
+
+### Linear Regression Model Confusion Matrix
+```{r}
+
+```
+
+
+## Logistic Regression Model
+
+```{r}
+#logit<-glm(RH_out ~., data = energydatam)
+#summary(logit)
+
+#energydata_pred<-ifelse(predict(logit, energydatam, type = "response")>0.1,3,0)
+#summary(energydata_pred)
+
+#confusionMatrix(as.factor(energydata_pred),as.factor(energydata$RH_out),positive = "1")
+
+```
+
+### Logistic Regression Model Confusion Matrix
+
+## Decision Tree Model
+```{r}
+
+```
+
+### Decision Tree Model Confusion Matrix
+```{r}
+
+```
+
+
+## ANN Model
+```{r}
+
+```
+
+### ANN Model Confusion Matrix
+```{r}
+
+```
+
+
+## Stacked Model
+```{r}
+
+```
+
+
+### Stacked Model Confusion Matrix
+
+# Analysis & Conclusions
+
