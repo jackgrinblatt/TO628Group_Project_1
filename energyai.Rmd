@@ -2,14 +2,19 @@
 title: "Energy AI"
 author: "Ketan Kshirsagar, Jack Grinblatt, Jon Tao, Eliada Ziraj "
 date: "4/11/2021"
-output: html_document
+output: 
+  html_document:
+    toc: true
+    theme: readable
+    highlight: tango
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+# Build Data Model
 
-## Set up Libraries
+### Set up Libraries
 ```{r, results='hide'}
 #For decision tree, C5.0 
 library(C50)
@@ -23,7 +28,7 @@ library(class)
 library(neuralnet)
 library(e1071)
 ```
-## Definitions
+### Definitions
 
 T1, Temperature in kitchen area, in Celsius
 RH1, Humidity in kitchen area, in % T2, Temperature in living room area, in Celsius RH2, Humidity in living room area, in %
@@ -41,7 +46,7 @@ Tdewpoint (from Chievres weather station), Â°C
 rv1, Random variable 1, nondimensional
 rv2, Random variable 2, nondimensional
 
-## Import and Clean data
+### Import and Clean data
 
 ```{r}
 energydata <- read.csv("KAG_energydata_complete.csv")
