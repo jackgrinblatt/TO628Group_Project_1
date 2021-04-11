@@ -122,12 +122,11 @@ energydata$RH_out <- ifelse(is.na(energydata$RH_out),mean(energydata$RH_out, na.
 energydata$Windspeed <- ifelse(is.na(energydata$Windspeed),mean(energydata$Windspeed, na.rm =T),energydata$Windspeed)
 energydata$Visibility <- ifelse(is.na(energydata$Visibility),mean(energydata$Visibility, na.rm =T),energydata$Visibility)
 energydata$Tdewpoint <- ifelse(is.na(energydata$Tdewpoint),mean(energydata$Tdewpoint, na.rm =T),energydata$Tdewpoint)
-#energydata$rv1 <- ifelse(is.na(energydata$rv1),mean(energydata$rv1, na.rm =T),energydata$rv1)
-#energydata$rv2 <- ifelse(is.na(energydata$rv2),mean(energydata$rv2, na.rm =T),energydata$rv2)
 
-energydatam <- as.data.frame(model.matrix(~.-1,energydata))
-str(energydatam)
-summary(energydatam)
+
+#energydatam <- as.data.frame(model.matrix(~.-1,energydata))
+str(energydata)
+summary(energydata)
 
 ```
 # Build Models
@@ -146,7 +145,7 @@ summary(energydatam)
 ## Logistic Regression Model
 
 ```{r}
-logit<-glm(Appliances ~., data = energydatam)
+logit<-glm(Appliances ~., data = energydata)
 summary(logit)
 
 ```
@@ -161,11 +160,11 @@ summary(logit)
 
 ## Decision Tree Model
 ```{r}
-energydatadt <- as.data.frame(model.matrix(~.-1,energydata))
+energydatadt <- energydata
 energydatadt$Appliances <- as.factor(energydatadt$Appliances)
 decisiontreemodel <- C5.0(Appliances ~., data = energydatadt)
 summary(decisiontreemodel)
-plot(decisiontreemodel)
+#plot(decisiontreemodel)
 ```
 
 ### Decision Tree Model Confusion Matrix
@@ -179,10 +178,10 @@ confusionMatrix(energydecisionpredict, energydatadt$Appliances)
 ```{r}
 set.seed(12345)
 
-testset <- sample(1:nrow(energydatam), 3947)
+testset <- sample(1:nrow(energydata), 3947)
 
-energytest <- energydatam[testset,]
-energytrain <- energydatam[-testset,]
+energytest <- energydata[testset,]
+energytrain <- energydata[-testset,]
 
 annmodel <- neuralnet(Appliances ~ ., data=energytrain)
 ```
