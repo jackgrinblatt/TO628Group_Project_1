@@ -27,6 +27,8 @@ library(class)
 #For ANN
 library(neuralnet)
 library(e1071)
+# For stepwise
+library(MASS)
 ```
 ### Definitions
 
@@ -96,6 +98,7 @@ energydata$date <- NULL
 energydata$lights <- NULL
 energydata$rv1 <- NULL
 energydata$rv2 <- NULL
+energydata$Appliances <- as.numeric(energydata$Appliances)
 energydata$T1 <- ifelse(is.na(energydata$T1),mean(energydata$T1, na.rm =T),energydata$T1)
 energydata$T2 <- ifelse(is.na(energydata$T2),mean(energydata$T2, na.rm =T),energydata$T2)
 energydata$T3 <- ifelse(is.na(energydata$T3),mean(energydata$T3, na.rm =T),energydata$T3)
@@ -133,12 +136,10 @@ summary(energydata)
 
 ## Linear Regression Model
 ```{r}
-
-```
-
-### Linear Regression Model Confusion Matrix
-```{r}
-
+linreg<-lm(Appliances ~., data = energydata)
+step.model <- stepAIC(linreg, direction = "both", 
+                      trace = FALSE)
+summary(step.model)
 ```
 
 
@@ -146,53 +147,47 @@ summary(energydata)
 
 ```{r}
 logit<-glm(Appliances ~., data = energydata)
-summary(logit)
+steplogit <- stepAIC(logit, direction = "both", 
+                      trace = FALSE)
+summary(steplogit)
 
 ```
-
-### Logistic Regression Model Confusion Matrix
-```{r}
-#energydata_pred<-ifelse(predict(logit, energydatam, type = "response")>0.1,3,0)
-#summary(energydata_pred)
-#confusionMatrix(as.factor(energydata_pred),as.factor(energydata$RH_out),positive = "1")
-```
-
-
-## Decision Tree Model
-```{r}
-energydatadt <- energydata
-energydatadt$Appliances <- as.factor(energydatadt$Appliances)
-decisiontreemodel <- C5.0(Appliances ~., data = energydatadt)
-summary(decisiontreemodel)
-#plot(decisiontreemodel)
-```
-
-### Decision Tree Model Confusion Matrix
-```{r}
-energydecisionpredict <- predict(decisiontreemodel, energydatadt)
-confusionMatrix(energydecisionpredict, energydatadt$Appliances)
-```
-
 
 ## ANN Model
 ```{r}
+
+normalize <- function(x) { 
+  return((x - min(x)) / (max(x) - min(x)))
+}
+
+energy_norm <- as.data.frame(lapply(energydata, normalize))
+
+
+str(energy_norm)
+summary(energy_norm$Appliances)
+
+
 set.seed(12345)
 
-testset <- sample(1:nrow(energydata), 3947)
+testset <- sample(1:nrow(energy_norm), 3947)
 
 energytest <- energydata[testset,]
 energytrain <- energydata[-testset,]
 
-annmodel <- neuralnet(Appliances ~ ., data=energytrain)
+annmodel <- neuralnet(Appliances ~ ., data=energytrain, hidden = 2)
+plot(annmodel)
 ```
 
 ### ANN Model Confusion Matrix
 ```{r}
 neuralpredictions <- predict(annmodel, energytest)
-neuralpredictions
+model_results <- compute(annmodel, energytest[2:25])
+predicted_Appliance <- model_results$net.result
+cor(predicted_Appliance, energytest$Appliances)
 
-#CrossTable(x= energydatam$Appliances, y= neuralpredictions, #prop.chisq=FALSE)
-#confusionMatrix(as.factor(neuralpredictions), as.factor(energytest$Appliances), positive="1")
+
+CrossTable(x= energytest$Appliances, y= neuralpredictions, prop.chisq=FALSE)
+
 ```
 
 
