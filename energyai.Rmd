@@ -12,6 +12,7 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
 # Build Data Model
 
 ### Set up Libraries
@@ -92,7 +93,7 @@ rv2, Random variable 2, nondimensional
 
 ### Import and Clean data
 
-```{r}
+```{r, cache=TRUE}
 energydata <- read.csv("KAG_energydata_complete.csv")
 energydata$date <- NULL
 energydata$lights <- NULL
@@ -127,7 +128,6 @@ energydata$Visibility <- ifelse(is.na(energydata$Visibility),mean(energydata$Vis
 energydata$Tdewpoint <- ifelse(is.na(energydata$Tdewpoint),mean(energydata$Tdewpoint, na.rm =T),energydata$Tdewpoint)
 
 
-#energydatam <- as.data.frame(model.matrix(~.-1,energydata))
 str(energydata)
 summary(energydata)
 
@@ -135,31 +135,51 @@ summary(energydata)
 # Build Models
 
 ## Linear Regression Model
-```{r}
+```{r, cache=TRUE}
 linreg<-lm(Appliances ~., data = energydata)
 step.model <- stepAIC(linreg, direction = "both", 
                       trace = FALSE)
 summary(step.model)
 ```
 
-
-## Logistic Regression Model
-
+## Decision Tree
 ```{r}
-logit<-glm(Appliances ~., data = energydata)
-steplogit <- stepAIC(logit, direction = "both", 
-                      trace = FALSE)
-summary(steplogit)
-
-```
-
-## ANN Model
-```{r}
-
 normalize <- function(x) { 
   return((x - min(x)) / (max(x) - min(x)))
 }
+energy_dt <- as.data.frame(lapply(energydata, normalize))
+energy_dt$Appliances <- as.factor(energydata$Appliances)
 
+test_dt <- sample(1:nrow(energy_dt), 3947)
+
+energy_dt_test <- energy_dt[test_dt,]
+energy_dt_train <- energy_dt[-test_dt,]
+
+dt_model <- C5.0(Appliances ~ ., data = energy_dt_train)
+#plot(dt_model)
+#summary(dt_model)
+
+```
+
+
+## KNN
+```{r}
+energy_y <- energy_dt[,1]
+energy_x <- energy_dt[,-1]
+
+knnmodel <- knn(train = energy_x, test = energy_x, cl = energy_y, k = 137)
+
+summary(knnmodel)
+confusionMatrix(knnmodel, energy_y)
+
+```
+
+
+## ANN Model
+```{r, cache=TRUE}
+normalize <- function(x) { 
+  return((x - min(x)) / (max(x) - min(x)))
+}
 energy_norm <- as.data.frame(lapply(energydata, normalize))
 
 
@@ -171,33 +191,31 @@ set.seed(12345)
 
 testset <- sample(1:nrow(energy_norm), 3947)
 
-energytest <- energydata[testset,]
-energytrain <- energydata[-testset,]
+energytest <- energy_norm[testset,]
+energytrain <- energy_norm[-testset,]
 
-annmodel <- neuralnet(Appliances ~ ., data=energytrain, hidden = 2)
+#need to make more complex, additional hidden layers, increase stepmax
+annmodel <- neuralnet(Appliances ~ ., data=energytrain, hidden = 1, stepmax = 1000000)
 plot(annmodel)
 ```
 
 ### ANN Model Confusion Matrix
-```{r}
-neuralpredictions <- predict(annmodel, energytest)
-model_results <- compute(annmodel, energytest[2:25])
+```{r, cache=TRUE}
+model_results <- compute(annmodel, energytest)
+summary(model_results$net.result)
 predicted_Appliance <- model_results$net.result
 cor(predicted_Appliance, energytest$Appliances)
 
 
-CrossTable(x= energytest$Appliances, y= neuralpredictions, prop.chisq=FALSE)
 
 ```
-
-
-## Stacked Model
-```{r}
-
-```
-
-
-### Stacked Model Confusion Matrix
 
 # Analysis & Conclusions
+
+
+--- NOTES ---
+1. Make ANN more compled and Remove ANN Confusion Matrix (not applicable for continuous), replace with MSE/MAPE (Eliada)
+2. Optimize KNN (#k) (Ketan)
+3. Repair Decision Tree (Jon)
+4. Analysis (Jack)
 
