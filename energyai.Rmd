@@ -144,26 +144,28 @@ summary(step.model)
 
 ## Decision Tree
 ```{r}
-normalize <- function(x) { 
-  return((x - min(x)) / (max(x) - min(x)))
-}
-energy_dt <- as.data.frame(lapply(energydata, normalize))
+energy_dt <- energydata
+
 energy_dt$Appliances <- as.factor(energydata$Appliances)
 
+set.seed(12345)
 test_dt <- sample(1:nrow(energy_dt), 3947)
 
 energy_dt_test <- energy_dt[test_dt,]
 energy_dt_train <- energy_dt[-test_dt,]
 
 dt_model <- C5.0(Appliances ~ ., data = energy_dt_train)
-#plot(dt_model)
-#summary(dt_model)
-
+summary(dt_model)
 ```
 
 
 ## KNN
 ```{r}
+normalize <- function(x) { 
+  return((x - min(x)) / (max(x) - min(x)))
+}
+energy_dt <- as.data.frame(lapply(energydata, normalize))
+
 energy_y <- energy_dt[,1]
 energy_x <- energy_dt[,-1]
 
