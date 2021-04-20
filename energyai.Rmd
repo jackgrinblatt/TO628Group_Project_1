@@ -166,13 +166,19 @@ normalize <- function(x) {
 }
 energy_dt <- as.data.frame(lapply(energydata, normalize))
 
-energy_y <- energy_dt[,1]
-energy_x <- energy_dt[,-1]
+#energy_y <- energy_dt[,1]
+#energy_x <- energy_dt[,-1]
 
-knnmodel <- knn(train = energy_x, test = energy_x, cl = energy_y, k = 137)
+energy_train <- energy_dt_train[,-1]
+energy_test <- energy_dt_test[,-1]
 
+energy_labels <- energy_dt_train[,1]
+
+knnmodel <- knn(train = energy_train, test = energy_test, cl = energy_labels, k = 137)
+#str(energy_y)
+summary(energy_labels)
 summary(knnmodel)
-confusionMatrix(knnmodel, energy_y)
+confusionMatrix(knnmodel, as.factor(energy_labels))
 
 ```
 
