@@ -1,6 +1,6 @@
 ---
 title: "Energy AI"
-author: "Ketan Kshirsagar, Jack Grinblatt, Jon Tao, Eliada Ziraj "
+author: "Ketan Kshirsagar, Jack Grinblatt, Jon Tao, Eliada Ziraj, Aksshath Soundarrarajan"
 date: "4/11/2021"
 output: 
   html_document:
@@ -161,6 +161,7 @@ summary(dt_model)
 
 ## KNN
 ```{r}
+
 normalize <- function(x) { 
   return((x - min(x)) / (max(x) - min(x)))
 }
@@ -172,13 +173,27 @@ energy_dt <- as.data.frame(lapply(energydata, normalize))
 energy_train <- energy_dt_train[,-1]
 energy_test <- energy_dt_test[,-1]
 
-energy_labels <- energy_dt_train[,1]
+energy_labels_train <- energy_dt_train[,1]
+energy_labels_test <- energy_dt_test[,1]
 
-knnmodel <- knn(train = energy_train, test = energy_test, cl = energy_labels, k = 137)
-#str(energy_y)
-summary(energy_labels)
-summary(knnmodel)
-confusionMatrix(knnmodel, as.factor(energy_labels))
+energy_labels_train <- as.factor(energy_labels_train)
+
+
+knnmodel <- knnreg(energy_train, unclass(energy_labels_train), k = 137)
+predy <- predict(knnmodel, data.frame(energy_test))
+
+postResample(pred=predy,obs=unclass(energy_labels_test))
+
+
+mse = mean((unclass(energy_labels_test) - predy)^2)
+mse
+mae=caret::MAE(unclass(energy_labels_test),predy)
+mae
+rmse=caret::RMSE(unclass(energy_labels_test),predy)
+rmse
+
+
+print(data.frame(unclass(energy_labels_test), predy))
 
 ```
 
@@ -207,13 +222,16 @@ annmodel <- neuralnet(Appliances ~ ., data=energytrain, hidden = 1, stepmax = 10
 plot(annmodel)
 ```
 
-### ANN Model Confusion Matrix
+### ANN Model Performance
 ```{r, cache=TRUE}
 model_results <- compute(annmodel, energytest)
 summary(model_results$net.result)
-predicted_Appliance <- model_results$net.result
-cor(predicted_Appliance, energytest$Appliances)
+results <- data.frame(actual=energytest$Appliances,prediction=model_results$net.result)
+results
 
+postResample(model_results$net.result,energytest$Appliances)
+
+predicted_Appliance <- model_results$net.result
 
 
 ```
