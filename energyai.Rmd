@@ -143,7 +143,7 @@ summary(step.model)
 ```
 
 ## Decision Tree
-```{r}
+```{r, cache=TRUE}
 energy_dt <- energydata
 
 energy_dt$Appliances <- as.factor(energydata$Appliances)
@@ -155,11 +155,17 @@ energy_dt_test <- energy_dt[test_dt,]
 energy_dt_train <- energy_dt[-test_dt,]
 
 dt_model <- C5.0(Appliances ~ ., data = energy_dt_train)
+
+dt_predict <- predict(dt_model, energy_dt_test)
+library(caret)
+library(e1071)
+confusionMatrix(dt_predict, energy_dt_test$Appliances)
+
 ```
 
 
 ## KNN
-```{r}
+```{r, cache=TRUE}
 
 normalize <- function(x) { 
   return((x - min(x)) / (max(x) - min(x)))
@@ -221,7 +227,9 @@ predicted_Appliance <- model_results$net.result
 The project provided us a greater understanding of the importance of the underlying data in creating the optimal output. As an example, this dataset used 'energy consumption' in watt hours as a dependent variable, but the creator of the dataset rounded the output into intervals of 10. This allowed us to treat the dependent variable as both a factor and a numeric variable to use different models. This obviously caused complexity in handling the data but at the end the models worked.
 
 ## Output
-Based on our analysis, we found the ANN model to be the most accurate at predicting energy consumption for appliances. This makes sense given the underlying data (humidity and temp levels for different internal and external locations around a home). As opposed to Decision Tree, KNN, and Linear which all were far less accurate at predicting energy consumption.
+Based on our analysis, we found the ANN model to be the most accurate at predicting energy consumption for appliances. 
+
+This makes sense given the underlying data (humidity and temp levels for different internal and external locations around a home). As opposed to Decision Tree, KNN, and Linear which all were far less accurate at predicting energy consumption.
 
 ## Implications 
 Given the data, the model can be applied to optimizing grid reliability in the real world. One can deploy sensors to capture real time humidity and temp data in a home and use to predict Appliance energy consumption, thereby forecasting behind-the-meter volitility and extrapolate to grid-scale demand. This can allow for better generation forecasting, better demand response event planning, and even target households with poorer performing appliances for appliance rebate programs. 
