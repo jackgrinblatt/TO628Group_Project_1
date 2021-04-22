@@ -155,7 +155,6 @@ energy_dt_test <- energy_dt[test_dt,]
 energy_dt_train <- energy_dt[-test_dt,]
 
 dt_model <- C5.0(Appliances ~ ., data = energy_dt_train)
-summary(dt_model)
 ```
 
 
@@ -193,7 +192,7 @@ rmse=caret::RMSE(unclass(energy_labels_test),predy)
 rmse
 
 
-print(data.frame(unclass(energy_labels_test), predy))
+#print(data.frame(unclass(energy_labels_test), predy))
 
 ```
 
@@ -217,7 +216,6 @@ testset <- sample(1:nrow(energy_norm), 3947)
 energytest <- energy_norm[testset,]
 energytrain <- energy_norm[-testset,]
 
-#need to make more complex, additional hidden layers, increase stepmax
 annmodel <- neuralnet(Appliances ~ ., data=energytrain, hidden = 1, stepmax = 1000000)
 plot(annmodel)
 ```
@@ -227,12 +225,10 @@ plot(annmodel)
 model_results <- compute(annmodel, energytest)
 summary(model_results$net.result)
 results <- data.frame(actual=energytest$Appliances,prediction=model_results$net.result)
-results
 
 postResample(model_results$net.result,energytest$Appliances)
 
 predicted_Appliance <- model_results$net.result
-
 
 ```
 
@@ -247,9 +243,4 @@ Based on our analysis, we found the ANN model to be the most accurate at predict
 ## Implications 
 Given the data, the model can be applied to optimizing grid reliability in the real world. One can deploy sensors to capture real time humidity and temp data in a home and use to predict Appliance energy consumption, thereby forecasting behind-the-meter volitility and extrapolate to grid-scale demand. This can allow for better generation forecasting, better demand response event planning, and even target households with poorer performing appliances for appliance rebate programs. 
 
---- NOTES ---
-1. Friday 16: Make ANN more compled and Remove ANN Confusion Matrix (not applicable for continuous), replace with MSE/MAPE (Eliada)
-2. Friday 16: Optimize KNN (#k) (Ketan)
-3. Friday 16: Repair Decision Tree (Jon)
-4. Saturday 17: Analysis (Jack)
 
