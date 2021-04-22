@@ -166,9 +166,6 @@ normalize <- function(x) {
 }
 energy_dt <- as.data.frame(lapply(energydata, normalize))
 
-#energy_y <- energy_dt[,1]
-#energy_x <- energy_dt[,-1]
-
 energy_train <- energy_dt_train[,-1]
 energy_test <- energy_dt_test[,-1]
 
@@ -182,17 +179,6 @@ knnmodel <- knnreg(energy_train, unclass(energy_labels_train), k = 137)
 predy <- predict(knnmodel, data.frame(energy_test))
 
 postResample(pred=predy,obs=unclass(energy_labels_test))
-
-
-mse = mean((unclass(energy_labels_test) - predy)^2)
-mse
-mae=caret::MAE(unclass(energy_labels_test),predy)
-mae
-rmse=caret::RMSE(unclass(energy_labels_test),predy)
-rmse
-
-
-#print(data.frame(unclass(energy_labels_test), predy))
 
 ```
 
@@ -218,10 +204,7 @@ energytrain <- energy_norm[-testset,]
 
 annmodel <- neuralnet(Appliances ~ ., data=energytrain, hidden = 1, stepmax = 1000000)
 plot(annmodel)
-```
 
-### ANN Model Performance
-```{r, cache=TRUE}
 model_results <- compute(annmodel, energytest)
 summary(model_results$net.result)
 results <- data.frame(actual=energytest$Appliances,prediction=model_results$net.result)
@@ -229,8 +212,8 @@ results <- data.frame(actual=energytest$Appliances,prediction=model_results$net.
 postResample(model_results$net.result,energytest$Appliances)
 
 predicted_Appliance <- model_results$net.result
-
 ```
+
 
 # Analysis & Conclusions
 
